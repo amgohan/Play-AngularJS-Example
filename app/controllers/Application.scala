@@ -2,6 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import i18n.Lang
 
 import controllers.utils.LiftJson
 import net.liftweb.json._
@@ -14,6 +15,7 @@ import play.api.data._
 import play.api.data.Form
 import play.api.data.Forms._
 import views._
+import play.api.libs.json._
 
 object Application extends Controller with LiftJson {
   
@@ -22,7 +24,7 @@ object Application extends Controller with LiftJson {
   val taskForm = Form(
     mapping(
       "id" -> ignored(0L),
-      "label"  -> nonEmptyText,
+      "label"  -> text(minLength = 4),
       "done" ->ignored(false)
     )(Task.apply)(Task.unapply)
   )
@@ -41,11 +43,24 @@ object Application extends Controller with LiftJson {
   }
   
   def newTask = Action { implicit request =>
-    val t = taskForm.bindFromRequest.value map { task =>
+    /*val t = taskForm.bindFromRequest.value map { task =>
       val t = inTransaction(AppDB.taskTable insert task )
       t
     }
-    Ok(Extraction.decompose(t)).as("application/json")
+    Ok(Extraction.decompose(t)).as("application/json")*/
+	
+	taskForm.bindFromRequest.fold(
+      // Form has errors, redisplay it
+      errors => {
+	  Ok(Json.toJson(Map("status" -> "KO", "message" -> errors.errorsAsJson(Lang.get("us").get).toString)))
+	  },
+      
+      // We got a valid User value, display the summary
+      task => {
+	  val t = inTransaction(AppDB.taskTable insert task )
+	  Ok(Extraction.decompose(t)).as("application/json")
+	  }
+    )
   }
   
   def doneTask(id: Long) = Action { implicit request =>

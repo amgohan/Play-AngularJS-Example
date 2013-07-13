@@ -1,4 +1,5 @@
 function TodoCtrl($scope) {
+$scope.todoTextErrorHide = true;
   jsRouter.controllers.Application.tasks().ajax({
     async: false,
     success: function(data) {
@@ -9,16 +10,24 @@ function TodoCtrl($scope) {
     }
   });
   $scope.addTodo = function() {
-    jsRouter.controllers.Application.newTask().ajax({
+    newTask = jsRouter.controllers.Application.newTask().ajax({
       data: { label: $scope.todoText },
+	  dataType : "json",
       success: function(data) {
-        $scope.$apply(function(){
-          $scope.todos.push(data);
-          $scope.todoText = '';
-        });
-      },
-      error: function() {
-        alert("error:addTask");
+	    if(data.status == "KO") {
+		    $scope.$apply(function(){
+			  $scope.todoTextErrorHide = false;
+			  $scope.todoTextErrorMessage = jQuery.parseJSON(data.message).label[0];
+			});
+		}
+		else {
+		    
+			$scope.$apply(function(){
+			  $scope.todoTextErrorHide = true;
+			  $scope.todos.push(data);
+			  $scope.todoText = '';
+			});
+		}
       }
     });
   };
