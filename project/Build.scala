@@ -8,15 +8,13 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-        "org.squeryl" %% "squeryl" % "0.9.5-2"
+        "org.squeryl" %% "squeryl" % "0.9.5-6"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-        // lift-json-play-module
-        resolvers += "tototoshi.github.com maven-repo/releases" at "http://tototoshi.github.com/maven-repo/releases",
         libraryDependencies ++= Seq(
-           "com.github.tototoshi" %% "lift-json-play-module" % "0.1", 
-           "org.squeryl" %% "squeryl" % "0.9.5-2"
+           "org.squeryl" %% "squeryl" % "0.9.5-6",
+		   "net.liftweb" %% "lift-json" % "2.5-M4" exclude("org.specs2","specs2_2.10")
         )
     )
 

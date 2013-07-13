@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 
-import com.github.tototoshi.play2.json.LiftJson
+import controllers.utils.LiftJson
 import net.liftweb.json._
 import org.squeryl.PrimitiveTypeMode._
 import models.AppDB
